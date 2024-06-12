@@ -1,0 +1,13 @@
+
+require("babel-register");
+
+const path = require('path');
+
+const seedersPath = process.argv.includes('--seeders-path') ? process.argv[process.argv.indexOf('--seeders-path') + 1] : './src/database/seeders';
+
+
+module.exports = {
+  'seeders-path': path.resolve(seedersPath),
+  'migrations-path': path.resolve('src/database/migrations'),
+  'config': path.resolve('src/config', 'config.cjs'),
+};
