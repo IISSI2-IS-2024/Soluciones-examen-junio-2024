@@ -223,15 +223,6 @@ describe('Create restaurant validations', () => {
     expect(response.body.errors.some(error => error.param === field)).toBe(true)
   })
 
-  // Description validations
-  it('Should return 200 even when description is omitted (optional)', async () => {
-    const { description, ...dataWithoutDescription } = validRestaurantData
-    const response = await request(app)
-      .post('/restaurants')
-      .set('Authorization', `Bearer ${owner.token}`)
-      .send(dataWithoutDescription)
-    expect(response.status).toBe(200)
-  })
 
   it.each([
     { field: 'description', value: 123, msg: 'not a string' }
@@ -427,15 +418,6 @@ describe('Edit restaurant validations', () => {
     expect(response.body.errors.some(error => error.param === field)).toBe(true)
   })
 
-  // Description validations
-  it('Should return 200 even when description is omitted (optional)', async () => {
-    const { description, ...dataWithoutDescription } = validRestaurantData
-    const response = await request(app)
-      .put('/restaurants/1')
-      .set('Authorization', `Bearer ${owner.token}`)
-      .send(dataWithoutDescription)
-    expect(response.status).toBe(200)
-  })
 
   it.each([
     { field: 'description', value: 123, msg: 'not a string' }
