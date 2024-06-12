@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: docker.io/bitnami/mariadb:10.5
+    ports:
+      - '3306:3306'
+    volumes:
+      - 'mariadb_data:/bitnami/mariadb'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_USER=iissi_user
+      - MARIADB_PASSWORD=iissi$user
+      - MARIADB_DATABASE=deliverus
+      - MARIADB_SKIP_TEST_DB=yes
+    healthcheck:
+      test: ['CMD', '/opt/bitnami/scripts/mariadb/healthcheck.sh']
+      interval: 15s
+      timeout: 5s
+      retries: 6
+    networks:
+        - iissi2is
+  backend:
+      build:
+        context: ./
+        target: dev
+      volumes:
+        - .:/src
+        - ./DeliverUS-Backend/node_modules:/src/DeliverUS-Backend/node_modules
+      command: > 
+        sh -c "pwd && ls -la && npm run install:backend && /wait && npm run test:backend"
+      ports:
+        - "3000:3000"
+        - "9229:9229"
+      depends_on:
+        - mariadb
+      environment:
+        NODE_ENV: development
+        DEBUG: IISSI2-IS-Backend:*
+        WAIT_HOSTS: mariadb:3306
+        WAIT_HOSTS_TIMEOUT: 300
+        WAIT_SLEEP_INTERVAL: 3
+        WAIT_HOST_CONNECT_TIMEOUT: 5
+      env_file:
+        - ./DeliverUS-Backend/.env.docker
+      networks:
+        - iissi2is
+networks:
+  iissi2is:
+    driver: bridge
+volumes:
+  mariadb_data:
+    driver: local
+  node_modules:
+    driver: local
