@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState } from 'react'
 import { StyleSheet, FlatList, Pressable, View } from 'react-native'
-
 import { getAll, remove } from '../../api/RestaurantEndpoints'
 import ImageCard from '../../components/ImageCard'
 import TextSemiBold from '../../components/TextSemibold'
@@ -13,7 +12,7 @@ import { showMessage } from 'react-native-flash-message'
 import DeleteModal from '../../components/DeleteModal'
 import restaurantLogo from '../../../assets/restaurantLogo.jpeg'
 
-export default function RestaurantsScreen ({ navigation, route }) {
+export default function RestaurantsScreen({ navigation, route }) {
   const [restaurants, setRestaurants] = useState([])
   const [restaurantToBeDeleted, setRestaurantToBeDeleted] = useState(null)
   const { loggedInUser } = useContext(AuthorizationContext)
@@ -39,48 +38,54 @@ export default function RestaurantsScreen ({ navigation, route }) {
         {item.averageServiceMinutes !== null &&
           <TextSemiBold>Avg. service time: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.averageServiceMinutes} min.</TextSemiBold></TextSemiBold>
         }
-        <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }} >
+          <TextSemiBold>Shipping: <TextSemiBold textStyle={{ color: GlobalStyles.brandPrimary }}>{item.shippingCosts.toFixed(2)}€</TextSemiBold></TextSemiBold>
+        </View>
+
+        {
+          // Solution
+        }
+        {item.percentage != 0 && <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }} >
+          <TextSemiBold textStyle={{ color: item.percentage > 0 ? 'red' : 'green' }}>{item.percentage > 0 ? '¡Incremento de precios aplicados!' : '¡Descuentos aplicados!'}</TextSemiBold>
+        </View>
+        }
+
         <View style={styles.actionButtonsContainer}>
           <Pressable
-            onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })
-            }
+            onPress={() => navigation.navigate('EditRestaurantScreen', { id: item.id })}
             style={({ pressed }) => [
               {
-                backgroundColor: pressed
-                  ? GlobalStyles.brandBlueTap
-                  : GlobalStyles.brandBlue
+                backgroundColor: pressed ? GlobalStyles.brandBlueTap : GlobalStyles.brandBlue
               },
               styles.actionButton
-            ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='pencil' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Edit
-            </TextRegular>
-          </View>
-        </Pressable>
+            ]}
+          >
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='pencil' color={'white'} size={20} />
+              <TextRegular textStyle={styles.text}>Edit</TextRegular>
+            </View>
+          </Pressable>
 
-        <Pressable
-            onPress={() => { setRestaurantToBeDeleted(item) }}
+          <Pressable
+            onPress={() => setRestaurantToBeDeleted(item)}
             style={({ pressed }) => [
               {
-                backgroundColor: pressed
-                  ? GlobalStyles.brandPrimaryTap
-                  : GlobalStyles.brandPrimary
+                backgroundColor: pressed ? GlobalStyles.brandPrimaryTap : GlobalStyles.brandPrimary
               },
               styles.actionButton
-            ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Delete
-            </TextRegular>
-          </View>
-        </Pressable>
+            ]}
+          >
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='delete' color={'white'} size={20} />
+              <TextRegular textStyle={styles.text}>Delete</TextRegular>
+            </View>
+          </Pressable>
         </View>
       </ImageCard>
     )
   }
+
 
   const renderEmptyRestaurantsList = () => {
     return (
@@ -93,27 +98,27 @@ export default function RestaurantsScreen ({ navigation, route }) {
   const renderHeader = () => {
     return (
       <>
-      {loggedInUser &&
-      <Pressable
-        onPress={() => navigation.navigate('CreateRestaurantScreen')
+        {loggedInUser &&
+          <Pressable
+            onPress={() => navigation.navigate('CreateRestaurantScreen')
+            }
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed
+                  ? GlobalStyles.brandGreenTap
+                  : GlobalStyles.brandGreen
+              },
+              styles.button
+            ]}>
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='plus-circle' color={'white'} size={20} />
+              <TextRegular textStyle={styles.text}>
+                Create restaurant
+              </TextRegular>
+            </View>
+          </Pressable>
         }
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed
-              ? GlobalStyles.brandGreenTap
-              : GlobalStyles.brandGreen
-          },
-          styles.button
-        ]}>
-        <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-          <MaterialCommunityIcons name='plus-circle' color={'white'} size={20}/>
-          <TextRegular textStyle={styles.text}>
-            Create restaurant
-          </TextRegular>
-        </View>
-      </Pressable>
-    }
-    </>
+      </>
     )
   }
   const fetchRestaurants = async () => {
@@ -155,21 +160,22 @@ export default function RestaurantsScreen ({ navigation, route }) {
 
   return (
     <>
-    <FlatList
-      style={styles.container}
-      data={restaurants}
-      renderItem={renderRestaurant}
-      keyExtractor={item => item.id.toString()}
-      ListHeaderComponent={renderHeader}
-      ListEmptyComponent={renderEmptyRestaurantsList}
-    />
-    <DeleteModal
-      isVisible={restaurantToBeDeleted !== null}
-      onCancel={() => setRestaurantToBeDeleted(null)}
-      onConfirm={() => removeRestaurant(restaurantToBeDeleted)}>
+      <FlatList
+        style={styles.container}
+        data={restaurants}
+        renderItem={renderRestaurant}
+        keyExtractor={item => item.id.toString()}
+        ListHeaderComponent={renderHeader}
+        ListEmptyComponent={renderEmptyRestaurantsList}
+      />
+      <DeleteModal
+        isVisible={restaurantToBeDeleted !== null}
+        onCancel={() => setRestaurantToBeDeleted(null)}
+        onConfirm={() => removeRestaurant(restaurantToBeDeleted)}>
         <TextRegular>The products of this restaurant will be deleted as well</TextRegular>
         <TextRegular>If the restaurant has orders, it cannot be deleted.</TextRegular>
-    </DeleteModal>
+      </DeleteModal>
+
     </>
   )
 }
@@ -200,8 +206,8 @@ const styles = StyleSheet.create({
   actionButtonsContainer: {
     flexDirection: 'row',
     bottom: 5,
-    position: 'absolute',
-    width: '90%'
+    position: 'relative',
+    width: '95%'
   },
   text: {
     fontSize: 16,
@@ -212,5 +218,5 @@ const styles = StyleSheet.create({
   emptyList: {
     textAlign: 'center',
     padding: 50
-  }
+  },
 })
