@@ -20,6 +20,20 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
     fetchRestaurantDetail()
   }, [route])
 
+  // Solution
+  const isAboutToBeInvisible = (deadline) => {
+    console.log(deadline)
+    console.log(typeof (deadline))
+    const currentDate = new Date()
+    const deadlineDate = new Date(deadline)
+
+    const timeDiff = deadlineDate.getTime() - currentDate.getTime()
+
+    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24))
+
+    return daysLeft <= 7
+  }
+
   const renderHeader = () => {
     return (
       <View>
@@ -63,9 +77,14 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
         <TextRegular numberOfLines={2}>{item.description}</TextRegular>
         <TextSemiBold textStyle={styles.price}>{item.price.toFixed(2)}€</TextSemiBold>
         {!item.availability &&
-          <TextRegular textStyle={styles.availability }>Not available</TextRegular>
+          <TextRegular textStyle={styles.availability}>Not available</TextRegular>
         }
-         <View style={styles.actionButtonsContainer}>
+
+        {/* Solution */}
+        {item.visibleUntil && isAboutToBeInvisible(item.visibleUntil) &&
+          <TextRegular textStyle={styles.visible}>Is about to dissapear!</TextRegular>
+        }
+        <View style={styles.actionButtonsContainer}>
           <Pressable
             onPress={() => navigation.navigate('EditProductScreen', { id: item.id })
             }
@@ -77,15 +96,15 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
               },
               styles.actionButton
             ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='pencil' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Edit
-            </TextRegular>
-          </View>
-        </Pressable>
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='pencil' color={'white'} size={20} />
+              <TextRegular textStyle={styles.text}>
+                Edit
+              </TextRegular>
+            </View>
+          </Pressable>
 
-        <Pressable
+          <Pressable
             onPress={() => { setProductToBeDeleted(item) }}
             style={({ pressed }) => [
               {
@@ -95,13 +114,13 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
               },
               styles.actionButton
             ]}>
-          <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-            <MaterialCommunityIcons name='delete' color={'white'} size={20}/>
-            <TextRegular textStyle={styles.text}>
-              Delete
-            </TextRegular>
-          </View>
-        </Pressable>
+            <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+              <MaterialCommunityIcons name='delete' color={'white'} size={20} />
+              <TextRegular textStyle={styles.text}>
+                Delete
+              </TextRegular>
+            </View>
+          </Pressable>
         </View>
       </ImageCard>
     )
@@ -166,7 +185,7 @@ export default function RestaurantDetailScreen ({ navigation, route }) {
         isVisible={productToBeDeleted !== null}
         onCancel={() => setProductToBeDeleted(null)}
         onConfirm={() => removeProduct(productToBeDeleted)}>
-          <TextRegular>If the product belong to some order, it cannot be deleted.</TextRegular>
+        <TextRegular>If the product belong to some order, it cannot be deleted.</TextRegular>
       </DeleteModal>
     </View>
   )
@@ -228,6 +247,12 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginRight: 5,
     color: GlobalStyles.brandSecondary
+  },
+  // Solution
+  visible: {
+    textAlign: 'right',
+    marginRight: 5,
+    color: GlobalStyles.brandPrimary
   },
   actionButton: {
     borderRadius: 8,
