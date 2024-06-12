@@ -28,7 +28,20 @@ const create = [
   }).withMessage('Please upload an image with format (jpeg, png).'),
   check('image').custom((value, { req }) => {
     return checkFileMaxSize(req, 'image', maxFileSize)
-  }).withMessage('Maximum file size of ' + maxFileSize / 1000000 + 'MB')
+  }).withMessage('Maximum file size of ' + maxFileSize / 1000000 + 'MB'),
+  // Solution
+  check('visibleUntil').optional().isDate().toDate(),
+  check('visibleUntil').custom((value, { req }) => {
+    const currentDate = new Date()
+    if (value && value < currentDate) {
+      return Promise.reject(new Error('The visibility must finish after the current date.'))
+    } else { return Promise.resolve() }
+  }),
+  check('availability').custom((value, { req }) => {
+    if (value === false && req.body.visibleUntil) {
+      return Promise.reject(new Error('Cannot set the availability and visibility at the same time.'))
+    } else { return Promise.resolve() }
+  })
 ]
 
 const update = [
@@ -45,7 +58,20 @@ const update = [
   check('image').custom((value, { req }) => {
     return checkFileMaxSize(req, 'image', maxFileSize)
   }).withMessage('Maximum file size of ' + maxFileSize / 1000000 + 'MB'),
-  check('restaurantId').not().exists()
+  check('restaurantId').not().exists(),
+  // Solution
+  check('visibleUntil').optional().isDate().toDate(),
+  check('visibleUntil').custom((value, { req }) => {
+    const currentDate = new Date()
+    if (value && value < currentDate) {
+      return Promise.reject(new Error('The visibility must finish after the current date.'))
+    } else { return Promise.resolve() }
+  }),
+  check('availability').custom((value, { req }) => {
+    if (value === false && req.body.visibleUntil) {
+      return Promise.reject(new Error('Cannot set the availability and visibility at the same time.'))
+    } else { return Promise.resolve() }
+  })
 ]
 
 export { create, update }
