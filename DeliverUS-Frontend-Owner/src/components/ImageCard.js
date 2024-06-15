@@ -5,17 +5,16 @@ import * as GlobalStyles from '../styles/GlobalStyles'
 
 // Props: defaultImageUri: {uri: xxx}, imageUri: {uri: xxx}, onPress: () => {}, title: String, badgeText: String, touchable: boolean
 // Style props: cardStyle, imageContainerStyle, imageStyle, bodyStyle, titleStyle
-export default function ImageCard (props) {
+export default function ImageCard(props) {
   const renderImageCardBody = (props) => {
     return (
       <View style={styles.card} >
         <View>
           <Image style={styles.image} source={props.imageUri} />
-          {/* Solution for windows server <Image style={styles.image} source={props.imageUri?.uri.replace(/\\/g, '/')} /> */}
         </View>
         <View style={styles.cardBody}>
-            <TextSemiBold textStyle={styles.cardTitle}>{props.title}</TextSemiBold>
-            {props.children}
+          <TextSemiBold textStyle={styles.cardTitle}>{props.title}</TextSemiBold>
+          {props.children}
         </View>
       </View>
     )
@@ -31,11 +30,11 @@ export default function ImageCard (props) {
         },
         styles.wrapperCustom
       ]}>
-          {renderImageCardBody(props)}
-        </Pressable>
+        {renderImageCardBody(props)}
+      </Pressable>
       : <>
-          {renderImageCardBody(props)}
-        </>
+        {renderImageCardBody(props)}
+      </>
   )
 }
 

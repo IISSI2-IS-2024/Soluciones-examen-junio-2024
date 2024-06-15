@@ -56,6 +56,11 @@ module.exports = {
         ],
         defaultValue: 'offline'
       },
+      // Solution
+      percentage: {
+        type: Sequelize.DOUBLE,
+        defaultValue: 0.0
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

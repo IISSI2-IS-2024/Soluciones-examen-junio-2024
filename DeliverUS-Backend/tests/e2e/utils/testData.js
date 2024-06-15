@@ -43,7 +43,8 @@ const bodeguitaRestaurant = {
   url: 'http://www.bodeguitasantonioromero.com/',
   email: 'info@bodeguitasantonioromero.com',
   phone: '+34654223939',
-  shippingCosts: 3.5
+  shippingCosts: 3.5,
+  percentage: 0
 }
 
 const paellaProduct = {

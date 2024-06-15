@@ -4,7 +4,7 @@ import * as ExpoImagePicker from 'expo-image-picker'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import * as yup from 'yup'
 import DropDownPicker from 'react-native-dropdown-picker'
-import { create, getRestaurantCategories } from '../../api/RestaurantEndpoints'
+import { create, getRestaurantCategories, percentage } from '../../api/RestaurantEndpoints'
 import InputItem from '../../components/InputItem'
 import TextRegular from '../../components/TextRegular'
 import * as GlobalStyles from '../../styles/GlobalStyles'
@@ -14,12 +14,13 @@ import { showMessage } from 'react-native-flash-message'
 import { ErrorMessage, Formik } from 'formik'
 import TextError from '../../components/TextError'
 
-export default function CreateRestaurantScreen ({ navigation }) {
+export default function CreateRestaurantScreen({ navigation }) {
   const [open, setOpen] = useState(false)
   const [restaurantCategories, setRestaurantCategories] = useState([])
   const [backendErrors, setBackendErrors] = useState()
 
-  const initialRestaurantValues = { name: null, description: null, address: null, postalCode: null, url: null, shippingCosts: null, email: null, phone: null, restaurantCategoryId: null }
+  // Solution ( percentage:0 )
+  const initialRestaurantValues = { name: null, description: null, address: null, postalCode: null, url: null, shippingCosts: null, email: null, phone: null, restaurantCategoryId: null, percentage: 0 }
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -57,7 +58,7 @@ export default function CreateRestaurantScreen ({ navigation }) {
   })
 
   useEffect(() => {
-    async function fetchRestaurantCategories () {
+    async function fetchRestaurantCategories() {
       try {
         const fetchedRestaurantCategories = await getRestaurantCategories()
         const fetchedRestaurantCategoriesReshaped = fetchedRestaurantCategories.map((e) => {
@@ -167,7 +168,7 @@ export default function CreateRestaurantScreen ({ navigation }) {
                 value={values.restaurantCategoryId}
                 items={restaurantCategories}
                 setOpen={setOpen}
-                onSelectItem={ item => {
+                onSelectItem={item => {
                   setFieldValue('restaurantCategoryId', item.value)
                 }}
                 setItems={setRestaurantCategories}
@@ -176,7 +177,7 @@ export default function CreateRestaurantScreen ({ navigation }) {
                 style={{ backgroundColor: GlobalStyles.brandBackground }}
                 dropDownStyle={{ backgroundColor: '#fafafa' }}
               />
-              <ErrorMessage name={'restaurantCategoryId'} render={msg => <TextError>{msg}</TextError> }/>
+              <ErrorMessage name={'restaurantCategoryId'} render={msg => <TextError>{msg}</TextError>} />
 
               <Pressable onPress={() =>
                 pickImage(
@@ -218,12 +219,12 @@ export default function CreateRestaurantScreen ({ navigation }) {
                   },
                   styles.button
                 ]}>
-              <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
-                <MaterialCommunityIcons name='content-save' color={'white'} size={20}/>
-                <TextRegular textStyle={styles.text}>
-                  Save
-                </TextRegular>
-              </View>
+                <View style={[{ flex: 1, flexDirection: 'row', justifyContent: 'center' }]}>
+                  <MaterialCommunityIcons name='content-save' color={'white'} size={20} />
+                  <TextRegular textStyle={styles.text}>
+                    Save
+                  </TextRegular>
+                </View>
               </Pressable>
             </View>
           </View>
@@ -260,5 +261,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     alignSelf: 'center',
     marginTop: 5
-  }
+  },
 })
