@@ -18,7 +18,7 @@ export default function CreateProductScreen ({ navigation, route }) {
   const [productCategories, setProductCategories] = useState([])
   const [backendErrors, setBackendErrors] = useState()
 
-  const initialProductValues = { name: null, description: null, price: null, order: null, restaurantId: route.params.id, productCategoryId: null, availability: true }
+  const initialProductValues = { name: null, description: null, price: null, order: null, restaurantId: route.params.id, productCategoryId: null, availability: true, visibleUntil: null }
   const validationSchema = yup.object().shape({
     name: yup
       .string()
@@ -35,6 +35,10 @@ export default function CreateProductScreen ({ navigation, route }) {
       .integer('Please provide an integer order value'),
     availability: yup
       .boolean(),
+    // Solution
+    visibleUntil: yup
+      .date()
+      .nullable(),
     productCategoryId: yup
       .number()
       .positive()
@@ -135,6 +139,12 @@ export default function CreateProductScreen ({ navigation, route }) {
                 dropDownStyle={{ backgroundColor: '#fafafa' }}
               />
               <ErrorMessage name={'productCategoryId'} render={msg => <TextError>{msg}</TextError> }/>
+
+              {/* SOLUTION */}
+              <InputItem
+                name='visibleUntil'
+                label='Visible until:'
+              />
 
               <TextRegular>Is it available?</TextRegular>
               <Switch
